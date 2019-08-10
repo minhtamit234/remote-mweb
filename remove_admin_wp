@@ -1,0 +1,48 @@
+<?php
+// Add custom Theme Functions here
+// 
+// 
+// 
+function wpb_load_fa() {
+wp_enqueue_style( 'wpb-fa', 'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' );
+
+}
+function custom_menu_page_removing() {
+    remove_menu_page( 'flatsome-panel' );
+    remove_menu_page( 'themes.php' );
+    remove_menu_page( 'plugins.php' );
+     remove_menu_page( 'tools.php' );
+    
+    remove_menu_page( 'edit.php?post_type=featured_item' );
+}
+add_action( 'admin_init', 'custom_menu_page_removing' );
+
+function clear_node_title( $wp_admin_bar ) {
+ 
+    // Get all the nodes
+    $all_toolbar_nodes = $wp_admin_bar->get_nodes();
+    // Create an array of node ID's we'd like to remove
+    $clear_titles = array(
+        'site-name',
+        'customize',
+        'flatsome_panel'
+    );
+ 
+    foreach ( $all_toolbar_nodes as $node ) {
+ 
+        // Run an if check to see if a node is in the array to clear_titles
+        if ( in_array($node->id, $clear_titles) ) {
+            // use the same node's properties
+            $args = $node;
+ 
+            // make the node title a blank string
+            $args->title = '';
+ 
+            // update the Toolbar node
+            $wp_admin_bar->add_node( $args );
+        }
+    }
+}
+add_action( 'admin_bar_menu', 'clear_node_title', 999 );
+
+//add_action( 'wp_enqueue_scripts', 'wpb_load_fa' );
