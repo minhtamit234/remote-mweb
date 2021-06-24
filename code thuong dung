@@ -1,0 +1,160 @@
+/**Thêm text tùy chọn vào sau giá*/
+
+add_filter( 'woocommerce_get_price_html', 'devvn_price_prefix_suffix', 99, 2 );
+function devvn_price_prefix_suffix( $price, $product ){
+    if(is_singular('product')) {
+        $price = $price . '(Chưa bao gồm VAT)';
+    }
+    return apply_filters( 'woocommerce_get_price', $price );
+}
+
+/**Thay đổi độ dài của mô tảá*/
+function devvn_custom_excerpt_length( $length ) {
+    return 70; //thay bằng độ dài mong muốn
+}
+add_filter( 'excerpt_length', 'devvn_custom_excerpt_length', 999 );
+
+//* Thay đổi văn bản cho nút add to cart***/
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'lv_custom_cart_button_text' );
+function lv_custom_cart_button_text() {
+  return __( 'Buy Product', 'woocommerce' );
+}
+/**Change the add to cart button by product name*/
+// Change the add to cart button by product name.
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'lv_custom_cart_button_text' );
+add_filter( 'woocommerce_product_add_to_cart_text', 'lv_custom_cart_button_text' );
+function lv_custom_cart_button_text() {
+    global $product;
+    $id     = get_the_ID();
+    $title  = get_the_title( $id );
+    return __( 'Buy ' . $title, 'woocommerce' );
+    
+    /**Create Social Share Buttons */
+    // Create Social Share Buttons .
+if ( ! function_exists( 'socialshare_buttons' ) ):
+function socialshare_buttons() {
+ 
+    // Get current page URL 
+    $longvietURL = urlencode(get_permalink());
+ 
+    // Get current page title
+    $longvietTitle = htmlspecialchars(urlencode(html_entity_decode(get_the_title(), ENT_COMPAT, 'UTF-8')), ENT_COMPAT, 'UTF-8');
+     
+    // Get Post Thumbnail for pinterest
+    $longvietThumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
+ 
+    // Construct sharing URL without using any script
+    $twitterURL = 'https://twitter.com/intent/tweet?text='.$longvietTitle.'&url='.$longvietURL;
+    $facebookURL = 'https://www.facebook.com/sharer/sharer.php?u='.$longvietURL;
+    $bufferURL = 'https://bufferapp.com/add?url='.$longvietURL.'&text='.$longvietTitle;
+    $linkedInURL = 'https://www.linkedin.com/shareArticle?mini=true&url='.$longvietURL.'&title='.$longvietTitle;
+    $pinterestURL = 'https://pinterest.com/pin/create/button/?url='.$longvietURL.'&media='.$longvietThumbnail[0].'&description='.$longvietTitle;
+ 
+    // Add sharing button at the end of page/page content
+        $content='<div class="longviet-social">
+            <div class="longviet-link social-title"><h5>SHARE ON</h5></div>
+            <a class="longviet-link longviet-twitter" href="'. $twitterURL .'" target="_blank">Twitter</a>
+            <a class="longviet-link longviet-facebook" href="'.$facebookURL.'" target="_blank">Facebook</a>
+            <a class="longviet-link longviet-buffer" href="'.$bufferURL.'" target="_blank">Buffer</a>
+            <a class="longviet-link longviet-linkedin" href="'.$linkedInURL.'" target="_blank">LinkedIn</a>
+            <a class="longviet-link longviet-pinterest" href="'.$pinterestURL.'" data-pin-custom="true" target="_blank">Pin It</a>
+        </div>';
+        echo $content;
+ 
+}
+endif;
+
+
+// Hiển thị nút chia sẽ xã hội trên post, page
+if ( !class_exists( 'AddSocilaShareContent' ) ) {
+    class AddSocilaShareContent {
+        function __construct() {
+            add_filter( 'the_content', array( $this,'insert_socialshare_content') );
+        }
+        public function insert_socialshare_content( $content ) {
+            if ( is_singular( array( 'post', 'page' ) ) ) { // Display On post, page
+                socialshare_buttons();  // Display on Before
+                $socialshare_content = $this->get_after_content();
+                $content.= apply_filters('socialshare_content', $socialshare_content );
+            }
+            return $content;
+        } // Star Display On After
+        public function get_after_content() {
+            ob_start();
+            socialshare_buttons(); 
+            $socialshare = ob_get_contents();
+            ob_end_clean();
+            return $socialshare;
+        } // End Display On After
+    }
+    new AddSocilaShareContent(); 
+}/* Social share button */
+ 
+.longviet-social {
+    margin: 10px 0px;
+    padding: 10px;
+    -webkit-font-smoothing: antialiased;
+    font-size: 12px;
+    border: 1px solid #eee;
+}
+ 
+.longviet-link {
+    padding: 4px 8px !important;
+    color: #fff !important;
+    font-size: 12px;
+    border-radius: 2px;
+    margin-right: 2px;
+    cursor: pointer;
+    margin-top: 2px;
+    display: inline-block;
+    text-decoration: none;
+}
+ 
+.social-title h5 {
+    padding: 0px !important;
+    margin: 0 !important;
+}
+  
+.longviet-link:hover,.longviet-link:active {
+    color: white;
+}
+  
+.longviet-twitter {
+    background: #00aced;
+}
+  
+.longviet-twitter:hover,.longviet-twitter:active {
+    background: #0084b4;
+}
+  
+.longviet-facebook {
+    background: #3B5997;
+}
+  
+.longviet-facebook:hover,.longviet-facebook:active {
+    background: #2d4372;
+}
+  
+.longviet-buffer {
+    background: #444;
+}
+  
+.longviet-buffer:hover,.longviet-buffer:active {
+    background: #222;
+}
+  
+.longviet-pinterest {
+    background: #bd081c;
+}
+  
+.longviet-pinterest:hover,.longviet-pinterest:active {
+    background: #bd081c;
+}
+  
+.longviet-linkedin {
+    background: #0074A1;
+}
+  
+.longviet-linkedin:hover,.longviet-linkedin:active {
+    background: #006288;
+}
