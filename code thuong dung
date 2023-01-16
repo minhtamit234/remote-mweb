@@ -1,3 +1,12 @@
+add_filter( 'gutenberg_use_widgets_block_editor', '__return_false' );
+add_filter( 'use_widgets_block_editor', '__return_false' );
+add_filter('use_block_editor_for_post', '__return_false');
+add_action( 'wp_enqueue_scripts', 'remove_block_css', 100 );
+function remove_block_css() {
+wp_dequeue_style( 'wp-block-library' );
+wp_dequeue_style( 'wp-block-library-theme' );
+wp_dequeue_style( 'wc-block-style' );
+}
 /**Thêm text tùy chọn vào sau giá*/
 
 add_filter( 'woocommerce_get_price_html', 'devvn_price_prefix_suffix', 99, 2 );
